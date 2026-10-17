@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Assignment क्रिया Companion",
+  "version": "1.1",
+  "description": "Syncs MasterSoft ERP assignments to Assignment क्रिया",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "https://jecrc.mastersofterp.in/*",
+    "http://localhost:3000/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://jecrc.mastersofterp.in/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

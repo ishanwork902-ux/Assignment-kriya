@@ -1,0 +1,144 @@
+"use client";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAssignments } from '../hooks/useAssignments';
+import { AssignmentCard } from '../components/AssignmentCard';
+import { AssignmentForm } from '../components/AssignmentForm';
+import { StudyStats } from '../components/StudyStats';
+import { PomodoroTimer } from '../components/timer/PomodoroTimer';
+import { StudyBot } from '../components/chatbot/StudyBot';
+import { LayoutDashboard, CheckCircle2, Clock, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+
+export default function Home() {
+  const { assignments, addAssignment, toggleComplete, deleteAssignment, updateAssignmentFile } = useAssignments();
+  const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const { theme, toggleTheme } = useTheme();
+
+  const filtered = assignments.filter(a => {
+    if (filter === 'pending') return !a.completed;
+    if (filter === 'completed') return a.completed;
+    return true;
+  });
+
+  const handleFileUpload = async (id: string, file: File) => {
+    const fileURL = URL.createObjectURL(file);
+    updateAssignmentFile(id, fileURL);
+  };
+
+  return (
+    <div className={`min-h-screen p-4 md:p-8 font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="max-w-4xl mx-auto"
+      >
+        <header className="flex items-center justify-between mb-8">
+          <motion.div
+            initial={{ x: -20 }}
+            animate={{ x: 0 }}
+            className="flex items-center gap-4"
+          >
+            <div className="p-3 bg-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-200">
+              <LayoutDashboard size={32} />
+            </div>
+            <div>
+              <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>StudyFlow</h1>
+              <p className="text-slate-500">Master your academic deadlines</p>
+            </div>
+          </motion.div>
+
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={toggleTheme}
+            className={`p-3 rounded-full transition-all ${theme === 'dark' ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 border shadow-sm'}`}
+          >
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+          </motion.button>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <StudyStats assignments={assignments} />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <AssignmentForm onAdd={addAssignment} />
+            </motion.div>
+
+            <div className="flex gap-2 mb-6">
+              {[
+                { id: 'all', label: 'All', icon: <LayoutDashboard size={16}/> },
+                { id: 'pending', label: 'Pending', icon: <Clock size={16}/> },
+                { id: 'completed', label: 'Completed', icon: <CheckCircle2 size={16}/> },
+              ].map(btn => (
+                <button
+                  key={btn.id}
+                  onClick={() => setFilter(btn.id as any)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    filter === btn.id ? 'bg-indigo-600 text-white shadow-md' : theme === 'dark' ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 border'
+                  }`}
+                >
+                  {btn.icon} {btn.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-2">
+              <AnimatePresence mode="popLayout">
+                {filtered.length === 0 ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className={`text-center py-12 ${theme === 'dark' ? 'text-slate-500 bg-slate-800 border-slate-700' : 'text-slate-400 bg-white border-dashed'} rounded-2xl border`}
+                  >
+                    <p>No assignments found. Time to relax! ☕</p>
+                  </motion.div>
+                ) : (
+                  filtered.sort((a,b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+                    .map(a => (
+                      <AssignmentCard
+                        key={a.id}
+                        assignment={a}
+                        onToggle={toggleComplete}
+                        onDelete={deleteAssignment}
+                        onFileUpload={handleFileUpload}
+                      />
+                    ))
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <PomodoroTimer />
+            </motion.div>
+            <motion.div
+              whileHover={{ y: -5 }}
+              className="bg-indigo-900 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden"
+            >
+              <div className="relative z-10">
+                <h3 className="text-xl font-bold mb-2">Pro Tip 💡</h3>
+                <p className="text-indigo-200 text-sm leading-relaxed">
+                  Break your big assignments into smaller chunks. Use the Pomodoro timer to stay focused for 25 minutes, then take a 5-minute break!
+                </p>
+              </div>
+              <div className="absolute -bottom-4 -right-4 opacity-20">
+                <LayoutDashboard size={120} />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
+      <StudyBot />
+    </div>
+  );
+}
