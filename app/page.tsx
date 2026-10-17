@@ -42,11 +42,11 @@ export default function Home() {
       if (Array.isArray(data)) {
         data.forEach(item => {
           addAssignment({
-            title: item.title,
-            deadline: item.deadline,
-            subject: item.subject || 'Imported',
+            title: String(item.title),
+            deadline: String(item.deadline),
+            subject: String(item.subject || 'Imported'),
             priority: (item.priority as 'Low' | 'Medium' | 'High') || 'Medium',
-            category: item.category || 'CPLT'
+            category: (item.category as any) || 'CPLT'
           });
         });
         setShowPasteInput(false);
@@ -54,11 +54,11 @@ export default function Home() {
         alert(`${data.length} assignments imported successfully!`);
       } else if (data.title && data.deadline) {
         addAssignment({
-          title: data.title,
-          deadline: data.deadline,
-          subject: data.subject || 'Imported',
+          title: String(data.title),
+          deadline: String(data.deadline),
+          subject: String(data.subject || 'Imported'),
           priority: (data.priority as 'Low' | 'Medium' | 'High') || 'Medium',
-          category: data.category || 'CPLT'
+          category: (data.category as any) || 'CPLT'
         });
         setShowPasteInput(false);
         setPasteValue('');
