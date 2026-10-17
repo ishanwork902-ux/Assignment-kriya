@@ -90,6 +90,7 @@ export default function Home() {
           addAssignment({
             ...item,
             priority: item.priority as 'Low' | 'Medium' | 'High',
+            category: item.category as 'CPLT' | 'FOA' | 'MATHS' | 'PHYSICS' | 'CS',
           });
         }
       });
