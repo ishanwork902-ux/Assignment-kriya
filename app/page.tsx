@@ -5,7 +5,7 @@ import { useAssignments } from '../hooks/useAssignments';
 import { AssignmentCard } from '../components/AssignmentCard';
 import { AssignmentForm } from '../components/AssignmentForm';
 import { StudyStats } from '../components/StudyStats';
-import { PomodoroTimer } from '../components/timer/PomodoroTimer';
+import { StudyBot } from '../components/chatbot/StudyBot';
 import { LayoutDashboard, CheckCircle2, Clock, Sun, Moon, ClipboardPaste, FileUp } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
@@ -86,7 +86,12 @@ export default function Home() {
         category: 'CPLT'
       }));
       imported.forEach(item => {
-        if (item.title && item.deadline) addAssignment(item);
+        if (item.title && item.deadline) {
+          addAssignment({
+            ...item,
+            priority: item.priority as 'Low' | 'Medium' | 'High',
+          });
+        }
       });
       alert(`Imported ${imported.length} assignments from CSV!`);
     };
