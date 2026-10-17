@@ -45,7 +45,7 @@ export default function Home() {
             title: item.title,
             deadline: item.deadline,
             subject: item.subject || 'Imported',
-            priority: item.priority || 'Medium',
+            priority: (item.priority as 'Low' | 'Medium' | 'High') || 'Medium',
             category: item.category || 'CPLT'
           });
         });
@@ -57,7 +57,7 @@ export default function Home() {
           title: data.title,
           deadline: data.deadline,
           subject: data.subject || 'Imported',
-          priority: data.priority || 'Medium',
+          priority: (data.priority as 'Low' | 'Medium' | 'High') || 'Medium',
           category: data.category || 'CPLT'
         });
         setShowPasteInput(false);
