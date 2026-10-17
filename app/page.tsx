@@ -6,7 +6,6 @@ import { AssignmentCard } from '../components/AssignmentCard';
 import { AssignmentForm } from '../components/AssignmentForm';
 import { StudyStats } from '../components/StudyStats';
 import { PomodoroTimer } from '../components/timer/PomodoroTimer';
-import { StudyBot } from '../components/chatbot/StudyBot';
 import { LayoutDashboard, CheckCircle2, Clock, Sun, Moon, ClipboardPaste, FileUp } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
@@ -45,7 +44,7 @@ export default function Home() {
             title: String(item.title),
             deadline: String(item.deadline),
             subject: String(item.subject || 'Imported'),
-            priority: (item.priority as 'Low' | 'Medium' | 'High') || 'Medium',
+            priority: (item.priority as any) || 'Medium',
             category: (item.category as any) || 'CPLT'
           });
         });
@@ -57,7 +56,7 @@ export default function Home() {
           title: String(data.title),
           deadline: String(data.deadline),
           subject: String(data.subject || 'Imported'),
-          priority: (data.priority as 'Low' | 'Medium' | 'High') || 'Medium',
+          priority: (data.priority as any) || 'Medium',
           category: (data.category as any) || 'CPLT'
         });
         setShowPasteInput(false);
@@ -187,7 +186,9 @@ export default function Home() {
                     <Droppable droppableId="assignments">
                       {(provided) => (
                         <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
-                          {filtered.sort((a,b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+                          {filtered
+                            .slice()
+                            .sort((a,b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
                             .map((a, index) => (
                               <AssignmentCard
                                 key={a.id}
@@ -199,6 +200,7 @@ export default function Home() {
                               />
                             ))
                           }
+                          {provided.placeholder}
                         </div>
                       )}
                     </Droppable>
