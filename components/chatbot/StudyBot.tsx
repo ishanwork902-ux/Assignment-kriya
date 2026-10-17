@@ -14,17 +14,21 @@ interface Message {
 export const StudyBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hi! I'm StudyBot. Upload your assignment file or ask me anything, and I'll help you solve it! 📚",
-      sender: 'bot',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMessages([
+      {
+        id: '1',
+        text: "Hi! I'm StudyBot. Upload your assignment file or ask me anything, and I'll help you solve it! 📚",
+        sender: 'bot',
+        timestamp: new Date(),
+      },
+    ]);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
